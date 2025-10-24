@@ -135,14 +135,15 @@
         }
         
         button {
-            padding: 12px 30px;
+            padding: 12px 20px;
             border: none;
             border-radius: 25px;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 50px;
         }
         
         .add-btn {
@@ -220,6 +221,17 @@
             .total-value {
                 font-size: 20px;
             }
+            
+            .button-container {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 16px;
+                min-width: 45px;
+            }
         }
     </style>
 </head>
@@ -254,10 +266,10 @@
         </div>
         
         <div class="button-container">
-            <button class="add-btn" onclick="addRow()">➕ 行を追加</button>
-            <button class="save-btn" onclick="saveData()">💾 データ保存</button>
-            <button class="load-btn" onclick="loadData()">📂 データ読み込み</button>
-            <button class="clear-btn" onclick="clearData()">🗑️ データクリア</button>
+            <button class="add-btn" onclick="addRow()" title="行を追加">➕</button>
+            <button class="save-btn" onclick="saveData()" title="データ保存">💾</button>
+            <button class="load-btn" onclick="loadData()" title="データ読み込み">📂</button>
+            <button class="clear-btn" onclick="clearData()" title="データクリア">🗑️</button>
         </div>
         
         <div class="total-section">
