@@ -140,42 +140,44 @@
             padding: 12px 20px;
             border: none;
             border-radius: 25px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            min-width: 50px;
+            min-width: 60px;
         }
         
         .add-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #666;
             color: white;
         }
         
         .add-btn:hover {
+            background: #555;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(102, 102, 102, 0.4);
         }
         
         .save-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #666;
             color: white;
         }
         
         .load-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #666;
             color: white;
         }
         
         .clear-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #666;
             color: white;
         }
         
         .save-btn:hover, .load-btn:hover, .clear-btn:hover {
+            background: #555;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(102, 102, 102, 0.4);
         }
         
         .delete-btn {
@@ -258,8 +260,8 @@
             
             button {
                 padding: 10px 15px;
-                font-size: 16px;
-                min-width: 45px;
+                font-size: 14px;
+                min-width: 50px;
             }
             
             .people-input {
@@ -307,10 +309,10 @@
         </div>
         
         <div class="button-container">
-            <button class="add-btn" onclick="addRow()" title="行を追加">➕</button>
-            <button class="save-btn" onclick="saveData()" title="データ保存">💾</button>
-            <button class="load-btn" onclick="loadData()" title="データ読み込み">📂</button>
-            <button class="clear-btn" onclick="clearData()" title="データクリア">🗑️</button>
+            <button class="add-btn" onclick="addRow()" title="行を追加">追加</button>
+            <button class="save-btn" onclick="saveData()" title="データ保存">保存</button>
+            <button class="load-btn" onclick="loadData()" title="データ読み込み">ロード</button>
+            <button class="clear-btn" onclick="clearData()" title="データクリア">クリア</button>
         </div>
         
         <div class="total-section">
