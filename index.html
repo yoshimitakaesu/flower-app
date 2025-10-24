@@ -155,6 +155,26 @@
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
         
+        .save-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+        
+        .load-btn {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+        }
+        
+        .clear-btn {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+        }
+        
+        .save-btn:hover, .load-btn:hover, .clear-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
         .delete-btn {
             background: #ff6b6b;
             color: white;
@@ -235,6 +255,9 @@
         
         <div class="button-container">
             <button class="add-btn" onclick="addRow()">➕ 行を追加</button>
+            <button class="save-btn" onclick="saveData()">💾 データ保存</button>
+            <button class="load-btn" onclick="loadData()">📂 データ読み込み</button>
+            <button class="clear-btn" onclick="clearData()">🗑️ データクリア</button>
         </div>
         
         <div class="total-section">
@@ -303,11 +326,109 @@
             }
         }
         
+        // データを保存する関数
+        function saveData() {
+            const data = {
+                rows: [],
+                timestamp: new Date().toISOString()
+            };
+            
+            const rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach(row => {
+                const flowerName = row.querySelector('.flower-name').value;
+                const unitPrice = row.querySelector('.unit-price').value;
+                const quantity = row.querySelector('.quantity').value;
+                
+                if (flowerName || unitPrice || quantity) {
+                    data.rows.push({
+                        flowerName: flowerName,
+                        unitPrice: unitPrice,
+                        quantity: quantity
+                    });
+                }
+            });
+            
+            localStorage.setItem('flowerAppData', JSON.stringify(data));
+            alert('データを保存しました！💾');
+        }
+        
+        // データを読み込む関数
+        function loadData() {
+            const savedData = localStorage.getItem('flowerAppData');
+            if (!savedData) {
+                alert('保存されたデータがありません。📭');
+                return;
+            }
+            
+            const data = JSON.parse(savedData);
+            
+            // 既存の行をクリア（最低1行は残す）
+            const tableBody = document.getElementById('tableBody');
+            while (tableBody.children.length > 1) {
+                tableBody.removeChild(tableBody.lastChild);
+            }
+            
+            // 保存されたデータで行を復元
+            data.rows.forEach((rowData, index) => {
+                if (index === 0) {
+                    // 最初の行は既存の行を更新
+                    const firstRow = tableBody.firstElementChild;
+                    firstRow.querySelector('.flower-name').value = rowData.flowerName;
+                    firstRow.querySelector('.unit-price').value = rowData.unitPrice;
+                    firstRow.querySelector('.quantity').value = rowData.quantity;
+                } else {
+                    // 追加の行を作成
+                    addRow();
+                    const newRow = tableBody.lastElementChild;
+                    newRow.querySelector('.flower-name').value = rowData.flowerName;
+                    newRow.querySelector('.unit-price').value = rowData.unitPrice;
+                    newRow.querySelector('.quantity').value = rowData.quantity;
+                }
+            });
+            
+            calculate();
+            alert('データを読み込みました！📂');
+        }
+        
+        // データをクリアする関数
+        function clearData() {
+            if (confirm('保存されたデータを削除しますか？🗑️')) {
+                localStorage.removeItem('flowerAppData');
+                alert('データを削除しました！🗑️');
+            }
+        }
+        
+        // 自動保存機能（入力時に自動で保存）
+        function autoSave() {
+            const data = {
+                rows: [],
+                timestamp: new Date().toISOString()
+            };
+            
+            const rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach(row => {
+                const flowerName = row.querySelector('.flower-name').value;
+                const unitPrice = row.querySelector('.unit-price').value;
+                const quantity = row.querySelector('.quantity').value;
+                
+                data.rows.push({
+                    flowerName: flowerName,
+                    unitPrice: unitPrice,
+                    quantity: quantity
+                });
+            });
+            
+            localStorage.setItem('flowerAppData', JSON.stringify(data));
+        }
+        
         // イベントリスナーを追加する関数
         function attachEventListeners(row) {
-            const inputs = row.querySelectorAll('.unit-price, .quantity');
+            const inputs = row.querySelectorAll('.unit-price, .quantity, .flower-name');
             inputs.forEach(input => {
-                input.addEventListener('input', calculate);
+                input.addEventListener('input', function() {
+                    calculate();
+                    autoSave(); // 自動保存を追加
+                });
             });
         }
         
@@ -315,7 +436,18 @@
         document.addEventListener('DOMContentLoaded', function() {
             const rows = document.querySelectorAll('#tableBody tr');
             rows.forEach(row => attachEventListeners(row));
-            calculate();
+            
+            // 保存されたデータがあるかチェック
+            const savedData = localStorage.getItem('flowerAppData');
+            if (savedData) {
+                if (confirm('保存されたデータがあります。読み込みますか？📂')) {
+                    loadData();
+                } else {
+                    calculate();
+                }
+            } else {
+                calculate();
+            }
         });
     </script>
 </body>
