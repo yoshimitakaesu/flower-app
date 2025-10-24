@@ -39,6 +39,8 @@
             color: #666;
             margin-bottom: 30px;
             font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
         }
         
         .table-container {
@@ -194,6 +196,33 @@
             font-weight: 600;
         }
         
+        .people-input {
+            width: 28px;
+            padding: 1px 2px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            background: white;
+            color: #333;
+            display: inline-block;
+            vertical-align: baseline;
+        }
+        
+        .people-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+        
+        .remainder-row {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -232,13 +261,25 @@
                 font-size: 16px;
                 min-width: 45px;
             }
+            
+            .people-input {
+                width: 24px;
+                font-size: 12px;
+                padding: 1px 2px;
+            }
+            
+            .subtitle {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🌸 花の仕入れ計算アプリ 🌸</h1>
-        <div class="subtitle">12名で分担する場合の一人あたりの金額を自動計算します</div>
+        <div class="subtitle">
+            <input type="number" id="peopleCount" value="12" min="1" max="100" step="1" class="people-input">名で分担する場合の一人あたりの金額を自動計算します
+        </div>
         
         <div class="table-container">
             <table id="flowerTable">
@@ -278,8 +319,12 @@
                 <span class="total-value"><span id="totalAmount">0</span> 円</span>
             </div>
             <div class="total-row">
-                <span class="total-label">一人あたりの合計金額:</span>
-                <span class="total-value"><span id="totalPerPerson">0</span> 円</span>
+                <span class="total-label">一人あたりの金額:</span>
+                <span class="total-value"><span id="perPersonAmount">0</span> 円</span>
+            </div>
+            <div class="total-row remainder-row">
+                <span class="total-label">あまりの金額:</span>
+                <span class="total-value"><span id="remainderAmount">0</span> 円</span>
             </div>
         </div>
     </div>
@@ -288,24 +333,28 @@
         // 計算を実行する関数
         function calculate() {
             const rows = document.querySelectorAll('#tableBody tr');
+            const peopleCount = parseInt(document.getElementById('peopleCount').value) || 1;
             let totalAmount = 0;
-            let totalPerPerson = 0;
             
             rows.forEach(row => {
                 const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
                 const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
                 const amount = unitPrice * quantity;
-                const perPerson = amount / 12;
+                const perPerson = Math.floor(amount / peopleCount);
                 
                 row.querySelector('.amount').value = Math.round(amount);
-                row.querySelector('.per-person').value = Math.round(perPerson);
+                row.querySelector('.per-person').value = perPerson;
                 
                 totalAmount += amount;
-                totalPerPerson += perPerson;
             });
             
+            // 合計金額の計算
+            const totalPerPerson = Math.floor(totalAmount / peopleCount);
+            const remainder = totalAmount % peopleCount;
+            
             document.getElementById('totalAmount').textContent = Math.round(totalAmount).toLocaleString();
-            document.getElementById('totalPerPerson').textContent = Math.round(totalPerPerson).toLocaleString();
+            document.getElementById('perPersonAmount').textContent = totalPerPerson.toLocaleString();
+            document.getElementById('remainderAmount').textContent = remainder.toLocaleString();
         }
         
         // 行を追加する関数
@@ -342,6 +391,7 @@
         function saveData() {
             const data = {
                 rows: [],
+                peopleCount: document.getElementById('peopleCount').value,
                 timestamp: new Date().toISOString()
             };
             
@@ -373,6 +423,11 @@
             }
             
             const data = JSON.parse(savedData);
+            
+            // 人数を復元
+            if (data.peopleCount) {
+                document.getElementById('peopleCount').value = data.peopleCount;
+            }
             
             // 既存の行をクリア（最低1行は残す）
             const tableBody = document.getElementById('tableBody');
@@ -448,6 +503,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             const rows = document.querySelectorAll('#tableBody tr');
             rows.forEach(row => attachEventListeners(row));
+            
+            // 人数入力のイベントリスナーを追加
+            document.getElementById('peopleCount').addEventListener('input', calculate);
             
             // 保存されたデータがあるかチェック
             const savedData = localStorage.getItem('flowerAppData');
